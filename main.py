@@ -128,3 +128,27 @@ def average(values):
 visualization = visualize_regions(regions, image_hue.shape[1], image_hue.shape[0])
 visualization_output = cv.cvtColor(visualization, cv.COLOR_HLS2BGR)
 cv.imwrite('visualization.png', visualization_output)
+
+
+def dominant_color(image, mask):
+    color_counts = dict()
+    colors = image[mask]
+    for color in colors:
+        color = tuple(color)
+        if color in color_counts:
+            color_counts[color] += 1
+        else:
+            color_counts[color] = 1
+    return max(color_counts.items(), key=lambda item: item[1])[0]
+
+
+def visualize_regions2(image, regions, width, height):
+    visualization = np.zeros((height, width, 3), dtype=np.uint8)
+    for region in regions:
+        color = dominant_color(image, region.mask)
+        visualization[region.mask] = color
+    return visualization
+
+
+visualization2 = visualize_regions2(image, regions, image_hue.shape[1], image_hue.shape[0])
+cv.imwrite('visualization2.png', visualization2)
